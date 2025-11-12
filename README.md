@@ -313,7 +313,7 @@ You are free to use, modify, and distribute this project.
 This project is a **complete end-to-end RAG (Retrieval-Augmented Generation)** application — combining LLM intelligence with semantic retrieval and a clean user interface.
 It showcases practical integration of **document parsing**, **vector search**, and **language model reasoning** in a modular and extensible architecture.
 
----
+
 
 ✨ *Developed with Python, FastAPI, Groq LLM, and a lot of ☕ caffeine.*
 
@@ -322,4 +322,4 @@ It showcases practical integration of **document parsing**, **vector search**, a
 
 
 
-```
+
