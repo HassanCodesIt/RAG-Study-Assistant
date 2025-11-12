@@ -274,7 +274,4 @@ If you’d like this README to:
 - Add a **“Demo” section** with screenshots of your frontend  
 - Or have **color-coded section headers (using HTML)**  
 
-I can generate that version too — perfectly optimized for GitHub’s dark mode (like the “Ayurveda Chat Assistant” style you showed).  
-
-Would you like me to make that **final premium README version with header banner and color-tuned section design**?
 ```
