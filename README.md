@@ -1,5 +1,5 @@
 
-````markdown
+
 # 📘 PDF-Based Retrieval-Augmented Generation (RAG) System
 
 This project implements a **Retrieval-Augmented Generation (RAG)** pipeline that lets users upload PDFs (classified by subject), store their text embeddings in a **vector database**, and later **ask contextual questions** to retrieve precise, referenced answers from the document itself.
