@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Query Page</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      margin: 40px;
+      background-color: #fafafa;
+      color: #333;
+    }
+    h1 { color: #333; }
+    select, textarea, button {
+      font-size: 15px;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      outline: none;
+    }
+    select:focus, textarea:focus { border-color: #2196F3; }
+    textarea {
+      width: 80%;
+      max-width: 700px;
+      height: 120px;
+      padding: 10px;
+    }
+    button {
+      margin-top: 10px;
+      padding: 8px 16px;
+      background-color: #2196F3;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover { background-color: #1976D2; }
+    #answer {
+      margin-top: 30px;
+      background: #f9f9f9;
+      border-left: 4px solid #007bff;
+      padding: 15px;
+      width: 80%;
+      max-width: 700px;
+      font-size: 16px;
+      white-space: pre-wrap;
+    }
+    a {
+      display: inline-block;
+      margin-top: 20px;
+    }
+  </style>
+
+  <script>
+    // ✅ Load subjects from localStorage
+    function loadSubjects() {
+      const subjectSelect = document.getElementById("subject");
+      subjectSelect.innerHTML = "";
+
+      const defaultSubjects = ["physics", "chemistry"];
+      const savedSubjects = JSON.parse(localStorage.getItem("subjects")) || [];
+      const allSubjects = [...new Set([...defaultSubjects, ...savedSubjects])];
+
+      const placeholder = document.createElement("option");
+      placeholder.value = "";
+      placeholder.textContent = "-- Select Subject --";
+      subjectSelect.appendChild(placeholder);
+
+      allSubjects.forEach(sub => {
+        const option = document.createElement("option");
+        option.value = sub.toLowerCase();
+        option.textContent = sub.charAt(0).toUpperCase() + sub.slice(1);
+        subjectSelect.appendChild(option);
+      });
+    }
+
+    // ✅ Send query to FastAPI backend
+    async function handleQuery(event) {
+      event.preventDefault();
+
+      const subject = document.getElementById("subject").value.trim();
+      const userQuery = document.getElementById("query").value.trim();
+      const answerBox = document.getElementById("answer");
+
+      if (!subject) {
+        alert("Please select a subject!");
+        return;
+      }
+      if (!userQuery) {
+        alert("Please enter a question!");
+        return;
+      }
+
+      answerBox.innerHTML = "<em>Fetching answer...</em>";
+
+      try {
+        const formData = new FormData();
+        formData.append("subject", subject);
+        formData.append("user_query", userQuery);
+
+        const response = await fetch("/query", {
+          method: "POST",
+          body: formData
+        });
+
+        if (!response.ok) {
+          throw new Error("Server error: " + response.status);
+        }
+
+        const data = await response.json();
+        answerBox.innerHTML = `
+          <h3>Answer:</h3>
+          <p>${data.response}</p>
+        `;
+      } catch (error) {
+        console.error(error);
+        answerBox.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
+      }
+    }
+
+    window.onload = loadSubjects;
+  </script>
+</head>
+
+<body>
+  <h1>Ask a Question</h1>
+
+  <form onsubmit="handleQuery(event)">
+    <label for="subject">Select Subject:</label><br>
+    <select id="subject" name="subject">
+      <!-- Populated by JS -->
+    </select>
+    <br><br>
+
+    <label for="query">Enter your question:</label><br>
+    <textarea id="query" name="user_query" placeholder="Type your query here..."></textarea><br>
+
+    <button type="submit">Ask</button>
+  </form>
+
+  <div id="answer"></div>
+
+  <a href="/">⬅ Go Back to Upload Page</a>
+</body>
+</html>
