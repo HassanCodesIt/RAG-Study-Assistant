@@ -264,9 +264,9 @@ Feel free to fork, modify, and expand this project.
 
 > 🧩 *Built with FastAPI, Groq, HuggingFace, and caffeine ☕ — making PDFs talk intelligently.*
 
-```
 
----
+
+
 
 ### 🔧 Notes for You
 If you’d like this README to:
