@@ -260,7 +260,7 @@ Feel free to fork, modify, and expand this project.
 * [FastAPI](https://fastapi.tiangolo.com/)
 * [pdfminer.six](https://pypi.org/project/pdfminer.six/)
 
----
+
 
 > 🧩 *Built with FastAPI, Groq, HuggingFace, and caffeine ☕ — making PDFs talk intelligently.*
 
@@ -268,10 +268,5 @@ Feel free to fork, modify, and expand this project.
 
 
 
-### 🔧 Notes for You
-If you’d like this README to:
-- Include a **banner image (top header)** with your project name
-- Add a **“Demo” section** with screenshots of your frontend  
-- Or have **color-coded section headers (using HTML)**  
 
-```
+
