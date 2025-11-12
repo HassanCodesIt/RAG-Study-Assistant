@@ -317,9 +317,9 @@ It showcases practical integration of **document parsing**, **vector search**, a
 
 ✨ *Developed with Python, FastAPI, Groq LLM, and a lot of ☕ caffeine.*
 
-```
 
----
+
+
 
 
 ```
