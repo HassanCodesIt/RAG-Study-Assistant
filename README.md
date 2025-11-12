@@ -1,6 +1,4 @@
----
 
-````markdown
 # 📚 RAG Study Assistant – Where PDFs Meet AI Intelligence 🤖
 
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
