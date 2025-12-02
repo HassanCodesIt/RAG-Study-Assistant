@@ -6,6 +6,13 @@ import chromadb
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.embeddings import HuggingFaceEmbeddings
 
+# Load environment variables once
+load_dotenv()
+
+# Initialize global instances (Singleton pattern)
+chroma_client = chromadb.PersistentClient(path="./vecDB1")
+embedder = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+
 
 
 def extraction(file_path):
@@ -17,8 +24,7 @@ def extraction(file_path):
 
 
 def vectordbadd(text, subject):
-    
-    chroma_client = chromadb.PersistentClient(path="./vecDB1")
+    # Use global client
     collection = chroma_client.get_or_create_collection(name=subject)
 
    
@@ -26,7 +32,7 @@ def vectordbadd(text, subject):
     chunks = splitter.split_text(text)
 
    
-    embedder = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+    # Use global embedder
     embeddings = embedder.embed_documents(chunks)
 
     
@@ -52,10 +58,10 @@ def vectordbadd(text, subject):
 
 
 def vectordbget(subject, query, top_k=3):
-    chroma_client = chromadb.PersistentClient(path="./vecDB1")
+    # Use global client
     collection = chroma_client.get_or_create_collection(name=subject)
 
-    embedder = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+    # Use global embedder
     query_embedding = embedder.embed_query(query)
 
     results = collection.query(query_embeddings=[query_embedding], n_results=top_k)
@@ -66,7 +72,7 @@ def vectordbget(subject, query, top_k=3):
 
 
 def llm(prompt, context):
-    load_dotenv()
+    # API key is already loaded by load_dotenv() at the top
     client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
     content = f"Answer the following question using only the data below.\n\nContext:\n{context}\n\nQuestion: {prompt}. if the question isnt from the context of the data or only entirely different from the given data, answer something like out of context of the pdf or anything similar and don't   \n also make the answer detailed and elaborate \n also provide where it is mentioned like para 5 or line 6 etc in brackets a line below\n also avoid using markdown \n\nAnswer:"

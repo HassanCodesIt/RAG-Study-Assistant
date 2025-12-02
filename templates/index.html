@@ -2,280 +2,178 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>Upload Page</title>
-    <style>
-        body {
-            font-family: "Segoe UI", Arial, sans-serif;
-            margin: 40px;
-            background-color: #fafafa;
-            color: #333;
-        }
-        h1 { color: #333; }
-
-        select, input, button {
-            font-size: 15px;
-            padding: 8px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-            outline: none;
-        }
-        select:focus, input:focus { border-color: #2196F3; }
-
-        #custom-subject-container { margin-top: 10px; }
-
-        #actions { margin-top: 30px; }
-
-        button {
-            margin-right: 10px;
-            background-color: #2196F3;
-            color: white;
-            border: none;
-            cursor: pointer;
-            transition: background 0.3s;
-            border-radius: 6px;
-        }
-        button:hover { background-color: #1976D2; }
-
-        /* Progress bar */
-        #progress-container {
-            display: none;
-            width: 100%;
-            background-color: #e0e0e0;
-            border-radius: 10px;
-            margin-top: 15px;
-            height: 26px;
-            overflow: hidden;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
-        }
-        #progress-bar {
-            width: 0%;
-            height: 100%;
-            background: linear-gradient(90deg, #42a5f5, #1e88e5);
-            text-align: center;
-            color: white;
-            line-height: 26px;
-            font-size: 14px;
-            border-radius: 10px;
-            transition: width 0.15s linear;
-            white-space: nowrap;
-            overflow: hidden;
-        }
-
-        /* Upload status + spinner */
-        #upload-status {
-            margin-top: 10px;
-            font-size: 14px;
-            color: #555;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        #loading-spinner {
-            display: none;
-            width: 18px;
-            height: 18px;
-            border: 3px solid #ccc;
-            border-top: 3px solid #2196F3;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* ✅ Success message */
-        #upload-success {
-            margin-top: 15px;
-            padding: 10px;
-            background: #e8f5e9;
-            border: 1px solid #43a047;
-            border-radius: 8px;
-            color: #2e7d32;
-            display: none;
-            width: fit-content;
-            font-size: 15px;
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG Study Assistant - Upload</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
 </head>
 <body>
-    <h1>Upload File</h1>
+    <div class="container">
+        <div class="card">
+            <h1>Upload Study Material</h1>
+            
+            <form id="upload-form" onsubmit="handleUpload(event)" enctype="multipart/form-data">
+                <label for="subject">Subject</label>
+                <select id="subject" name="subject" onchange="toggleCustomSubject(this)">
+                    <!-- Populated by JS -->
+                </select>
 
-    <form id="upload-form" onsubmit="handleUpload(event)" enctype="multipart/form-data">
-        <label for="subject">Select Subject:</label>
-        <select id="subject" name="subject" onchange="toggleCustomSubject(this)">
-            <!-- Populated by JS -->
-        </select>
+                <div id="custom-subject-container" style="display:none;">
+                    <label for="custom-subject">New Subject Name</label>
+                    <input type="text" id="custom-subject" placeholder="e.g., Biology">
+                </div>
 
-        <div id="custom-subject-container" style="display:none;">
-            <label for="custom-subject">Enter New Subject:</label><br>
-            <input type="text" id="custom-subject" placeholder="e.g., Biology">
+                <label for="file">PDF Document</label>
+                <input type="file" id="file" name="file" accept="application/pdf">
+
+                <!-- Progress bar -->
+                <div id="progress-container" class="progress-container" aria-hidden="true">
+                    <div id="progress-bar" class="progress-bar"></div>
+                </div>
+
+                <!-- Status Messages -->
+                <div id="upload-status" class="status-message" role="status" aria-live="polite"></div>
+
+                <button type="submit" id="submit-btn">
+                    <span id="btn-text">Upload Document</span>
+                </button>
+            </form>
+
+            <button class="secondary" onclick="window.location.href='/query'">
+                Go to Query Page &rarr;
+            </button>
         </div>
-
-        <br><br>
-
-        <label for="file">Choose File:</label>
-        <input type="file" id="file" name="file" accept="application/pdf">
-
-        <!-- Progress bar -->
-        <div id="progress-container" aria-hidden="true">
-            <div id="progress-bar">0%</div>
-        </div>
-
-        <!-- ✅ Loading indicator -->
-        <div id="upload-status" role="status" aria-live="polite">
-            <div id="loading-spinner"></div>
-            <span id="loading-text"></span>
-        </div>
-
-        <!-- ✅ Inline success message -->
-        <div id="upload-success"></div>
-
-        <br>
-        <button type="submit">Upload</button>
-    </form>
-
-    <div id="actions">
-        <button onclick="window.location.href='/query'">➡ Go to Query Page</button>
     </div>
 
-<script>
-    function loadSubjects() {
-        const select = document.getElementById("subject");
-        select.innerHTML = "";
+    <script>
+        function loadSubjects() {
+            const select = document.getElementById("subject");
+            select.innerHTML = "";
 
-        const defaultSubjects = ["physics", "chemistry"];
-        const savedSubjects = JSON.parse(localStorage.getItem("subjects")) || [];
-        const allSubjects = [...new Set([...defaultSubjects, ...savedSubjects])];
+            const defaultSubjects = ["physics", "chemistry"];
+            const savedSubjects = JSON.parse(localStorage.getItem("subjects")) || [];
+            const allSubjects = [...new Set([...defaultSubjects, ...savedSubjects])];
 
-        const placeholder = document.createElement("option");
-        placeholder.value = "";
-        placeholder.textContent = "-- Select --";
-        select.appendChild(placeholder);
+            const placeholder = document.createElement("option");
+            placeholder.value = "";
+            placeholder.textContent = "Select a subject...";
+            select.appendChild(placeholder);
 
-        allSubjects.forEach(sub => {
-            const option = document.createElement("option");
-            option.value = sub.toLowerCase();
-            option.textContent = sub.charAt(0).toUpperCase() + sub.slice(1);
-            select.appendChild(option);
-        });
+            allSubjects.forEach(sub => {
+                const option = document.createElement("option");
+                option.value = sub.toLowerCase();
+                option.textContent = sub.charAt(0).toUpperCase() + sub.slice(1);
+                select.appendChild(option);
+            });
 
-        const customOption = document.createElement("option");
-        customOption.value = "custom";
-        customOption.textContent = "➕ Add New Subject";
-        select.appendChild(customOption);
-    }
-
-    function toggleCustomSubject(selectElement) {
-        const customContainer = document.getElementById("custom-subject-container");
-        customContainer.style.display = (selectElement.value === "custom") ? "block" : "none";
-        if (selectElement.value === "custom") {
-            document.getElementById("custom-subject").focus();
+            const customOption = document.createElement("option");
+            customOption.value = "custom";
+            customOption.textContent = "+ Add New Subject";
+            select.appendChild(customOption);
         }
-    }
 
-    function handleUpload(event) {
-        event.preventDefault();
+        function toggleCustomSubject(selectElement) {
+            const customContainer = document.getElementById("custom-subject-container");
+            customContainer.style.display = (selectElement.value === "custom") ? "block" : "none";
+            if (selectElement.value === "custom") {
+                document.getElementById("custom-subject").focus();
+            }
+        }
 
-        const selectElement = document.getElementById("subject");
-        const selectedValue = selectElement.value;
-        const customSubjectInput = document.getElementById("custom-subject");
-        const progressContainer = document.getElementById("progress-container");
-        const progressBar = document.getElementById("progress-bar");
-        const spinner = document.getElementById("loading-spinner");
-        const loadingText = document.getElementById("loading-text");
-        const successBox = document.getElementById("upload-success");
+        function handleUpload(event) {
+            event.preventDefault();
 
-        let subject = selectedValue;
-        if (selectedValue === "custom") {
-            subject = customSubjectInput.value.trim();
-            if (!subject) {
-                alert("Please enter a custom subject name!");
+            const selectElement = document.getElementById("subject");
+            const selectedValue = selectElement.value;
+            const customSubjectInput = document.getElementById("custom-subject");
+            const progressContainer = document.getElementById("progress-container");
+            const progressBar = document.getElementById("progress-bar");
+            const statusBox = document.getElementById("upload-status");
+            const submitBtn = document.getElementById("submit-btn");
+            const btnText = document.getElementById("btn-text");
+
+            let subject = selectedValue;
+            if (selectedValue === "custom") {
+                subject = customSubjectInput.value.trim();
+                if (!subject) {
+                    showStatus("Please enter a custom subject name!", "error");
+                    return;
+                }
+
+                const savedSubjects = JSON.parse(localStorage.getItem("subjects")) || [];
+                if (!savedSubjects.includes(subject.toLowerCase())) {
+                    savedSubjects.push(subject.toLowerCase());
+                    localStorage.setItem("subjects", JSON.stringify(savedSubjects));
+                }
+
+                loadSubjects();
+                document.getElementById("subject").value = subject.toLowerCase();
+                customSubjectInput.value = "";
+                document.getElementById("custom-subject-container").style.display = "none";
+            }
+
+            const fileInput = document.getElementById("file");
+            if (!fileInput.files.length) {
+                showStatus("Please choose a file!", "error");
                 return;
             }
 
-            const savedSubjects = JSON.parse(localStorage.getItem("subjects")) || [];
-            if (!savedSubjects.includes(subject.toLowerCase())) {
-                savedSubjects.push(subject.toLowerCase());
-                localStorage.setItem("subjects", JSON.stringify(savedSubjects));
-            }
+            const formData = new FormData();
+            formData.append("subject", subject);
+            formData.append("file", fileInput.files[0]);
 
-            loadSubjects();
-            document.getElementById("subject").value = subject.toLowerCase();
-            customSubjectInput.value = "";
-            document.getElementById("custom-subject-container").style.display = "none";
+            // Reset UI
+            progressContainer.style.display = "block";
+            progressBar.style.width = "0%";
+            statusBox.style.display = "none";
+            submitBtn.disabled = true;
+            btnText.innerHTML = '<span class="spinner"></span> Uploading...';
+
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "/upload", true);
+
+            xhr.upload.onprogress = function (event) {
+                if (event.lengthComputable) {
+                    const percent = Math.round((event.loaded / event.total) * 100);
+                    progressBar.style.width = percent + "%";
+                }
+            };
+
+            xhr.onload = function () {
+                submitBtn.disabled = false;
+                btnText.textContent = "Upload Document";
+
+                if (xhr.status === 200) {
+                    progressBar.style.width = "100%";
+                    const response = JSON.parse(xhr.responseText);
+                    showStatus(`File "${response.filename}" uploaded successfully!`, "success");
+                    
+                    setTimeout(() => {
+                        progressContainer.style.display = "none";
+                    }, 3000);
+                } else {
+                    progressBar.style.width = "0%";
+                    showStatus("Upload failed. Please try again.", "error");
+                }
+            };
+
+            xhr.onerror = function () {
+                submitBtn.disabled = false;
+                btnText.textContent = "Upload Document";
+                progressBar.style.width = "0%";
+                showStatus("Network error during upload!", "error");
+            };
+
+            xhr.send(formData);
         }
 
-        const fileInput = document.getElementById("file");
-        if (!fileInput.files.length) {
-            alert("Please choose a file!");
-            return;
+        function showStatus(message, type) {
+            const statusBox = document.getElementById("upload-status");
+            statusBox.textContent = message;
+            statusBox.className = `status-message status-${type}`;
+            statusBox.style.display = "block";
         }
 
-        const formData = new FormData();
-        formData.append("subject", subject);
-        formData.append("file", fileInput.files[0]);
-
-        // ✅ Reset + show progress + spinner
-        progressContainer.style.display = "block";
-        spinner.style.display = "inline-block";
-        loadingText.textContent = "Uploading… Please wait";
-        successBox.style.display = "none";
-
-        progressBar.style.width = "0%";
-        progressBar.textContent = "0%";
-        progressBar.style.background = "linear-gradient(90deg, #42a5f5, #1e88e5)";
-
-        const xhr = new XMLHttpRequest();
-        xhr.open("POST", "/upload", true);
-
-        xhr.upload.onprogress = function (event) {
-            if (event.lengthComputable) {
-                const percent = Math.round((event.loaded / event.total) * 100);
-                progressBar.style.width = percent + "%";
-                progressBar.textContent = percent + "%";
-            }
-        };
-
-        xhr.onload = function () {
-            spinner.style.display = "none";
-            loadingText.textContent = "";
-
-            if (xhr.status === 200) {
-                progressBar.style.width = "100%";
-                progressBar.style.background = "linear-gradient(90deg, #66bb6a, #43a047)";
-                
-                // ✅ Show inline success message instead of alert
-                const response = JSON.parse(xhr.responseText);
-                successBox.innerHTML = `✅ File "<strong>${response.filename}</strong>" uploaded successfully under subject "<strong>${response.subject}</strong>"`;
-                successBox.style.display = "block";
-
-                // Auto-hide progress bar after 3 seconds
-                setTimeout(() => {
-                    progressContainer.style.display = "none";
-                }, 3000);
-            } else {
-                progressBar.style.background = "#f44336";
-                progressBar.textContent = "Failed ❌";
-                successBox.innerHTML = "❌ Upload failed!";
-                successBox.style.display = "block";
-            }
-        };
-
-        xhr.onerror = function () {
-            spinner.style.display = "none";
-            loadingText.textContent = "";
-            progressBar.style.background = "#f44336";
-            progressBar.textContent = "Error ❌";
-            successBox.innerHTML = "❌ Network error during upload!";
-            successBox.style.display = "block";
-        };
-
-        xhr.send(formData);
-    }
-
-    window.onload = loadSubjects;
-</script>
-
+        window.onload = loadSubjects;
+    </script>
 </body>
 </html>

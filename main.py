@@ -1,10 +1,13 @@
 
 from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from RAG import extraction, vectordbadd, vectordbget, llm
 import os
 
 app = FastAPI()
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 os.makedirs("./savepdf", exist_ok=True)
 os.makedirs("./vecDB1", exist_ok=True)
