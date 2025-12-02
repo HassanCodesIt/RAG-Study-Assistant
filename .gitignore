@@ -1,0 +1,17 @@
+
+__pycache__/
+*.py[cod]
+*$py.class
+
+
+venv/
+env/
+.env
+
+
+.vscode/
+.idea/
+
+
+vecDB1/
+savepdf/

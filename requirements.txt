@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+python-multipart
+pdfminer.six
+groq
+chromadb
+langchain-text-splitters
+langchain-community
+sentence-transformers
+python-dotenv

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Management</title>
+</head>
+<body>
+  <h2>Student Management System</h2>
+
+  <div>
+    <input id="name" placeholder="Name">
+    <input id="age" type="number" placeholder="Age">
+    <button onclick="addStudent()">Add</button>
+    <button onclick="loadStudents()">Show All</button>
+  </div>
+
+  <br>
+
+  <table border="1" cellpadding="5" cellspacing="0">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Age</th>
+        <th>Update</th>
+        <th>Delete</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+
+  <script>
+    async function addStudent() {
+      const name = document.getElementById("name").value;
+      const age = document.getElementById("age").value;
+
+      if (!name || !age) {
+        alert("Enter both name and age");
+        return;
+      }
+
+      const res = await fetch(`/insert_data?name=${name}&age=${age}`, { method: "POST" });
+      const data = await res.json();
+      alert(data.message);
+      loadStudents();
+    }
+
+    async function loadStudents() {
+      const res = await fetch("/read_data");
+      const data = await res.json();
+
+      const tbody = document.getElementById("tableBody");
+      tbody.innerHTML = "";
+
+      data.data.forEach(student => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${student.id}</td>
+          <td><input id="name_${student.id}" value="${student.name}" /></td>
+          <td><input id="age_${student.id}" type="number" value="${student.age}" /></td>
+          <td><button onclick="updateStudent(${student.id})">Update</button></td>
+          <td><button onclick="deleteStudent(${student.id})">Delete</button></td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    async function deleteStudent(id) {
+      const confirmDelete = confirm("Delete this student?");
+      if (!confirmDelete) return;
+
+      const res = await fetch(`/delete_data?student_id=${id}`, { method: "POST" });
+      const data = await res.json();
+      alert(data.message);
+      loadStudents();
+    }
+
+    async function updateStudent(id) {
+      const name = document.getElementById(`name_${id}`).value;
+      const age = document.getElementById(`age_${id}`).value;
+
+      if (!name || !age) {
+        alert("Enter both name and age");
+        return;
+      }
+
+      const res = await fetch(`/update_data?student_id=${id}&name=${name}&age=${age}`, { method: "POST" });
+      const data = await res.json();
+      alert(data.message);
+      loadStudents();
+    }
+  </script>
+</body>
+</html>
