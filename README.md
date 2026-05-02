@@ -190,18 +190,22 @@ Access it at 👉 **[http://127.0.0.1:8000](http://127.0.0.1:8000)**
 
 ---
 
-## 🖥️ Frontend Preview
+## 🖥️ App Screenshots
 
-**Upload Page:**
+### 📤 Upload Page
+Upload your PDF documents and categorize them by subject.
 
-* Choose or create a subject
-* Upload PDF with real-time progress bar
-* Auto-saves new subjects locally
+![Upload Page](screenshots/upload_page.png)
 
-**Query Page:**
+### 💬 Query Page
+Ask natural language questions about your uploaded study materials.
 
-* Ask natural language questions
-* Displays detailed AI answers with reference lines
+![Query Page](screenshots/query_page.png)
+
+### 🤖 AI Answer in Action
+Get detailed, contextual answers referenced directly from your documents.
+
+![Query with Answer](screenshots/query_with_answer.png)
 
 ---
 
