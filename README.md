@@ -123,13 +123,14 @@ sequenceDiagram
 
 ```
 📦 RAG-Study-Assistant/
-├── main.py                 # FastAPI application entrypoint
-├── subjects.py             # Core RAG logic (extract, embed, query)
+├── run.py                  # VS Code-friendly local launcher
+├── main.py                 # FastAPI application routes/entry module
+├── RAG.py                  # Core RAG logic (extract, embed, query)
 ├── templates/
 │   ├── index.html          # Upload page
 │   └── query.html          # Query page
-├── savepdf/                # Uploaded PDFs
-├── vecDB1/                 # Persistent Chroma vector DB
+├── savepdf/                # Uploaded PDFs (created automatically)
+├── vecDB1/                 # Persistent Chroma vector DB (created automatically)
 ├── requirements.txt        # Dependencies
 └── README.md               # Documentation
 ```
@@ -176,10 +177,12 @@ GROQ_API_KEY=your_actual_groq_api_key
 ### 5️⃣ Launch Application
 
 ```bash
-uvicorn main:app --reload
+python run.py
 ```
 
 Access it at 👉 **[http://127.0.0.1:8000](http://127.0.0.1:8000)**
+
+> Alternative: `uvicorn main:app --reload`
 
 ---
 
@@ -273,7 +276,6 @@ Feel free to fork, modify, and expand this project.
 
 
 > 🧩 *Built with FastAPI, Groq, HuggingFace, and caffeine ☕ — making PDFs talk intelligently.*
-
 
 
 
