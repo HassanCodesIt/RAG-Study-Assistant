@@ -161,10 +161,16 @@ pip install -r requirements.txt
 
 ### 4️⃣ Configure API Key
 
-In `subjects.py`:
+Create a `.env` file in the project root (you can copy from `.env.example`):
 
-```python
-client = Groq(api_key="YOUR_GROQ_API_KEY")
+```bash
+cp .env.example .env
+```
+
+Then set your key in `.env`:
+
+```env
+GROQ_API_KEY=your_actual_groq_api_key
 ```
 
 ### 5️⃣ Launch Application
@@ -267,7 +273,6 @@ Feel free to fork, modify, and expand this project.
 
 
 > 🧩 *Built with FastAPI, Groq, HuggingFace, and caffeine ☕ — making PDFs talk intelligently.*
-
 
 
 
