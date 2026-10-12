@@ -78,7 +78,7 @@ def llm(prompt, context):
     content = f"Answer the following question using only the data below.\n\nContext:\n{context}\n\nQuestion: {prompt}. if the question isnt from the context of the data or only entirely different from the given data, answer something like out of context of the pdf or anything similar and don't   \n also make the answer detailed and elaborate \n also provide where it is mentioned like para 5 or line 6 etc in brackets a line below\n also avoid using markdown \n\nAnswer:"
 
     completion = client.chat.completions.create(
-        model="openai/gpt-oss-20b",
+        model="openai/gpt-oss-120b",
         messages=[{"role": "user", "content": content}],
         temperature=0.7,
         max_completion_tokens=2048,
@@ -90,6 +90,5 @@ def llm(prompt, context):
     full_answer = ""
     for chunk in completion:full_answer += chunk.choices[0].delta.content or ""
     return full_answer
-
 
 
